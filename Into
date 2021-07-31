@@ -3,4 +3,76 @@ Lets Stat........
 
 Go is a general purpose programming language with advanced features an clean syntax. Because of its wide availablity and online support on various platforms,
     its well-documneted common library, and its focus o god software wngineering priniples .
-Go is an ideal language to learn as firat programming langugage.
+Go is an ideal language to learn as first programming langugage.
+
+Every Language has it own Blocks so do go have ,
+Data Types      
+            1) Atomic 
+            2) unsafe 
+            3) Abstract
+                        Atomic data types include
+                            1) String
+                            2) int
+                            3) int32
+                            4) int64
+                            5) uint
+                            6) uint32
+                            7) uint64
+                        unsafe
+                            1) Pointers
+                        Abstract Data types
+                             1) map[]<datatype>
+                             2) struct{}
+                             3) interface()
+ Lets deep dive to Atomic Data types
+ ----------------------------------------------------------------------------------Integer----------------------------------------------------------------------------------
+ Example 1:To declare a single variable
+                    package main()
+                    import "fmt"    //fmt is usedfor formatting 
+                    func main(){
+                    var a int       // to declare a variable 
+                    a=2
+                    fmt.Println(a)  // always rember that formaatting matters in Go 
+                    }
+Example 2 :To decalsre multiple variables
+                    package main()
+                    import "fmt"
+                    func main(){
+                    var {               //hear it will convert it explicit
+                            a=2
+                            b=3
+                        }
+                    fmt.Println(a+b)
+                   }
+Example 3: Type casting example 
+            1) package main()
+               import "fmt"
+               func main()
+               {
+               var a int32
+               var b int64
+               fmt.Println(a+b)                     //this will throw an error as of diffrent data types hence we make use of type casting
+               }
+            2) Now lets see after type casting 
+                package main()
+                import "fmt"
+                func main()
+                {
+                    var a int32
+                    var b int64
+                    fmt.Println(int64(a)+b)         //as we have type casted so it will work but we will get 0 as no value given 
+                }
+            3) Way to initalize a variabl in Go 
+                package main()
+                import "fmt"
+                func main(){
+                a:=1
+                b:=2
+                fmt.Println(a+b)                    // we will get summation as answer
+----------------------------------------------------------------------------------String----------------------------------------------------------------------------------
+                
+                
+                
+                
+                
+                
