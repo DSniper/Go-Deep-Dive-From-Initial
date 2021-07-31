@@ -70,9 +70,60 @@ Example 3: Type casting example
                 b:=2
                 fmt.Println(a+b)                    // we will get summation as answer
 ----------------------------------------------------------------------------------String----------------------------------------------------------------------------------
+What are Strings -  A string is traditionally a sequence of characters, either as a literal constant or as some kind of variable.
+                    Strings plays a vital role in helping manuplating and structuring the data .
+                    In a world od possiblities we started from  0 and 1 and we made so beautiful creations then we have 0 1 2 3 4 5 6 7 8 9 which added more bueaty but Strings helped in next level 
+                    In our day 2 day activites we mostly read normal letters hence Strings help us in extracting scrapping automating and many more ways.
+                    
+Example 1: Wap to print Hello World.
+                Step 1:-   package main
+                Step 2:-   import "fmt"
+                Step 3:-   func main()
+                Step 4:-   {
+                Step 5:-   fmt.Println("Hello world")
+                Step 6:-   }
+            Now lets undestand the code :
+                Step 1:- Is called package decleration. Every Program in Go must start with a package decleration
+                         Packages are Go's way of Organizing and reusing the code.
+                         Their are two types of Go Programs 
+                            1)Executable
+                                        Executalble applications are king of applicationsthat we ca run directly from the terminal
+                                        like in windows they end with .exe files 
+                            2)Libiraries
+                                        Libiraries are collections of code that we package together so that w can use them in other 
+                                        programs.
+                Step 2:- Next line of our code is a blank line 
+                            Go mostly doen't care abiut white space , we use it to make programs easier to read.           
+                Step 3:- Then we se import "fmt"
+                                    impoer keyword is how we include code from other programs to use with our programs.
+                                    The fmt package (shorthand of format) implements formatting for imput and output.
+                Step 4:-  We have comment in GO .
+                              Comments start with // or /* */ whom do we call as single line comment of multi line comment .
+                              These are for user to understand not for compiler as coompiler will skip these lines.
+                Step 5:-  Then we have function decleration 
+                            func mian(){
+                            fmt.Println("Hello world")
+                            }
+                          Functions are building blocks of a GO Program.
                 
-                
-                
-                
-                
-                
+               Now as had a good Understanding of code lets start with Programs .
+               Example 1: WAP to Print "I am awesome"
+                         package main                                                                                      Note :- if your code is not running Please vist https://play.golang.org/ and 
+                                                                                                                                   format you code its may be formatting issue if you are sure you had              
+                         import "fmt"                                                                                              enterd correct keywords
+                         
+                         func main() {                                                                                              
+                                    fmt.Println("I am awesome")
+                         }
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
