@@ -1,11 +1,25 @@
 Hello All In this session we will be having a close look to Go from Inital to have a freindly work experince with Go.
 Lets Stat........
 
-Go is a general purpose programming language with advanced features an clean syntax. Because of its wide availablity and online support on various platforms,
-    its well-documneted common library, and its focus o god software wngineering priniples .
-Go is an ideal language to learn as first programming langugage.
-
-Every Language has it own Blocks so do go have ,
+Go 
+    Is a general purpose programming language with advanced features an clean syntax. Because of its wide availablity and online support on various platforms,
+        its well-documented common library, and its focus on good software engineering principles .
+    Is an ideal language to learn as first programming langugage.
+    Is a programming language which is developed by Google with the vision of fast development and high performance.
+    Is a programming language which is developed by Google in 2007 by Robert Griesemer, Rob Pike, and Ken Thompson.
+    Is a statically-typed language. Go has a similar syntax to C. It is developed with the vision of high performance and fast development.
+    Provides type safety, garbage collection, dynamic-typing capability, many advanced built-in types such as variable length arrays and key-value maps etc.
+    ---------------------------------------------------------------Go has built-in concurrency---------------------------------------------------------------
+    uses interfaces as the building blocks of code reusability.
+    
+    Fun Fact :- Go named as golang foe better SEO because its then become "GO language"
+    
+    Lets install GO  and Tease Thanos  😄 😁
+        Steps for Installation
+            Go to https://golang.org/
+                Do Next Next Next ...  😂
+        
+Every Language has it own Blocks so do "Go" have ,
 Data Types      
             1) Atomic 
             2) unsafe 
