@@ -1,0 +1,875 @@
+a!localVariables(
+  /*No Use of Moving Position  */
+  local!hexes: {
+    "#90EE90",
+    "#98FB98",
+    "#98FB98",
+    "#FF0000"
+  },
+  local!testlabels: 1 = 1,
+  local!toogle: false(),
+  local!x: 8,
+  local!y: 8,
+  local!images: {
+    "https://appiantips.com/wp-content/uploads/2024/12/white-rook.png",
+    "https://appiantips.com/wp-content/uploads/2024/12/white-knight.png",
+    "https://appiantips.com/wp-content/uploads/2024/12/white-bishop.png",
+    "https://appiantips.com/wp-content/uploads/2024/12/King.png",
+    "https://appiantips.com/wp-content/uploads/2024/12/Queen.png",
+    "https://appiantips.com/wp-content/uploads/2024/12/white-bpawn.png",
+    "https://appiantips.com/wp-content/uploads/2024/12/white-bpawn-removebg-preview.png"
+  },
+  local!totalPlayers: {
+    "Knight",
+    "Horse",
+    "Bishop",
+    "King",
+    "Queen",
+    "Pyanda"
+  },
+  local!size: { "GALLERY", "ICON" }[1],
+  local!cells: enumerate(8),
+  local!positions: a!forEach(local!cells, char(64 + fv!index)),
+  local!player1Details: a!forEach(
+    items: local!positions[{ 1, 2 }],
+    expression: a!localVariables(
+      local!currentCell: fv!item,
+      a!forEach(
+        items: local!cells,
+        expression: a!match(
+          value: local!currentCell,
+          equals: "A",
+          then: a!map(
+            doc: local!images[if(
+              or(fv!index = 1, fv!index = 8), 1, if(
+                or(fv!index = 2, fv!index = 7), 2, if(
+                  or(fv!index = 3, fv!index = 6), 3, if(fv!index = 4, 4, 5)
+                )
+              )
+            )],
+            isactive: 1,
+            player: 1,
+            icon: local!totalPlayers[if(
+              or(fv!index = 1, fv!index = 8), 1, if(
+                or(fv!index = 2, fv!index = 7), 2, if(
+                  or(fv!index = 3, fv!index = 6), 3, if(fv!index = 4, 4, 5)
+                )
+              )
+            )],
+            currPosition: concat(local!currentCell, fv!index),
+            movingPosition: null,
+            x: fv!index,
+            y: index(
+              wherecontains(local!currentCell, local!positions),
+              1,
+              null
+            )
+          ),
+          default: a!map(
+            doc: local!images[6],
+            isactive: 1,
+            player: 1,
+            icon: local!totalPlayers[6],
+            currPosition: concat(local!currentCell, fv!index),
+            movingPosition: null,
+            x: fv!index,
+            y: index(
+              wherecontains(local!currentCell, local!positions),
+              1,
+              null
+            )
+          )
+        )
+      )
+    )
+  ),
+  local!player2Details: a!forEach(
+    items: local!positions[{ 7, 8 }],
+    expression: a!localVariables(
+      local!currentCell: fv!item,
+      a!forEach(
+        items: local!cells,
+        expression: a!match(
+          value: local!currentCell,
+          equals: "H",
+          then: a!map(
+            doc: local!images[if(
+              or(fv!index = 1, fv!index = 8), 1, if(
+                or(fv!index = 2, fv!index = 7), 2, if(
+                  or(fv!index = 3, fv!index = 6), 3, if(fv!index = 4, 5, 4)
+                )
+              )
+            )],
+            isactive: 1,
+            player: 2,
+            icon: local!totalPlayers[if(
+              or(fv!index = 1, fv!index = 8), 1, if(
+                or(fv!index = 2, fv!index = 7), 2, if(
+                  or(fv!index = 3, fv!index = 6), 3, if(fv!index = 4, 5, 4)
+                )
+              )
+            )],
+            currPosition: concat(local!currentCell, fv!index),
+            movingPosition: null,
+            x: fv!index,
+            y: index(
+              wherecontains(local!currentCell, local!positions),
+              1,
+              null
+            )
+          ),
+          default: a!map(
+            doc: local!images[6],
+            isactive: 1,
+            player: 2,
+            icon: local!totalPlayers[6],
+            currPosition: concat(local!currentCell, fv!index),
+            movingPosition: null,
+            x: fv!index,
+            y: index(
+              wherecontains(local!currentCell, local!positions),
+              1,
+              null
+            )
+          )
+        )
+      )
+    )
+  ),
+  local!emptySpace: a!forEach(
+    items: local!positions[{ 3, 4, 5, 6 }],
+    expression: a!localVariables(
+      local!currentCell: fv!item,
+      a!forEach(
+        items: local!cells,
+        expression: a!map(
+          doc: local!images[7],
+          isactive: 1,
+          player: null,
+          icon: null,
+          currPosition: concat(local!currentCell, fv!index),
+          movingPosition: null,
+          x: fv!index,
+          y: index(
+            wherecontains(local!currentCell, local!positions),
+            1,
+            null
+          )
+        )
+      )
+    )
+  ),
+  local!chessRules: a!forEach(
+    a!flatten(
+      {
+        local!player1Details,
+        local!emptySpace,
+        local!player2Details
+      }
+    ),
+    a!update(
+      data: fv!item,
+      index: "position",
+      value: fv!index
+    )
+  ),
+  local!killedPlayers:index(local!chessRules,wherecontains(tointeger(null),local!chessRules.isactive)),
+  local!currentPlayer: tointeger(null),
+  local!selectedMove,
+  local!nextMoveBySamePlayer,
+  local!capturelastMove,
+  {
+    a!columnsLayout(
+      columns: {
+        a!columnLayout(
+          contents: {
+            a!richTextDisplayField(
+              labelPosition: "COLLAPSED",
+              value: {
+                a!richTextItem(
+                  text: if(
+                    a!isNullOrEmpty(local!currentPlayer),
+                    "Please Start the Game",
+                    concat(
+                      "Please Play Your Turn Player ",
+                      local!currentPlayer
+                    )
+                  ),
+                  color: local!hexes[4],
+                  size: "MEDIUM_PLUS",
+                  style: "STRONG"
+                )
+              },
+              align: "CENTER"
+            )
+          }
+        )
+      }
+    ),
+    {
+      a!columnsLayout(
+        columns: {
+          a!columnLayout(
+            contents: {
+              a!richTextDisplayField(labelPosition: "COLLAPSED", value:  a!richTextItem(text: "Down Players")),
+              a!imageField(
+             
+                labelPosition: "ABOVE",
+                images: {
+
+                  a!forEach(
+                    reject(
+                      fn!isnull,
+                      a!forEach(
+                        local!killedPlayers,
+                        index(local!images,wherecontains(fv!item,local!totalplayers),null)
+                      )
+                    ),
+                    a!webImage(source: fv!item)
+                  )
+                },
+                size: "MEDIUM",
+                isThumbnail: false,
+                style: "STANDARD"
+              )
+            },
+            width: "1X"
+          ),
+          a!columnLayout(
+            contents: {
+              a!columnsLayout(
+                columns: {
+                  a!columnLayout(contents: {}),
+                  a!columnLayout(contents: {}),
+                  a!columnLayout(contents: {})
+                }
+              ),
+              a!columnsLayout(
+                columns: {
+                  a!columnLayout(
+                    contents: {
+                      a!cardLayout(
+                        contents: {
+                          a!forEach(
+                            items: enumerate(local!y),
+                            expression: a!localVariables(
+                              local!yitem: fv!item,
+                              local!yitemPlusOne: local!yitem + 1,
+                              a!columnsLayout(
+                                columns: {
+                                  a!forEach(
+                                    items: enumerate(local!x),
+                                    expression: a!localVariables(
+                                      local!xitemPlusOne: fv!item + 1,
+                                      local!currentIndexValue: local!yitem * local!y + fv!item + 1,
+                                      local!currentChessValue: index(
+                                        local!chessRules,
+                                        local!currentIndexValue,
+                                        null
+                                      ),
+                                      a!columnLayout(
+                                        contents: a!cardLayout(
+                                          contents: {
+                                            a!richTextDisplayField(
+                                              value: a!richTextItem(
+                                                text: concat(
+                                                  local!xitemPlusOne,
+                                                  " ",
+                                                  local!yitemPlusOne,
+                                                  " - ",
+                                                  local!currentIndexValue
+                                                )
+                                              ),
+                                              showWhen: local!testlabels
+                                            ),
+                                            a!imageField(
+                                              images: a!webImage(
+                                                source: index(local!currentChessValue, "doc", null)
+                                              ),
+                                              size: local!size,
+                                              isThumbnail: false,
+                                              style: "STANDARD",
+                                              align: "CENTER"
+                                            )
+                                          },
+                                          link: if(
+                                            and(
+                                              a!isNullOrEmpty(local!currentPlayer),
+                                              and(
+                                                a!isNotNullOrEmpty(local!currentChessValue.icon),
+                                                a!isNotNullOrEmpty(local!currentChessValue.isactive)
+                                              )
+                                            ),
+                                            a!dynamicLink(
+                                              saveInto: {
+                                                a!save(
+                                                  local!selectedMove,
+                                                  local!currentChessValue
+                                                ),
+                                                a!save(
+                                                  local!nextMoveBySamePlayer,
+                                                  local!selectedMove
+                                                ),
+                                                a!save(
+                                                  local!currentPlayer,
+                                                  local!currentChessValue.player
+                                                )
+                                              }
+                                            ),
+                                            a!match(
+                                              value: local!currentPlayer,
+                                              equals: 1,
+                                              then: if(
+                                                if(
+                                                  tointeger(local!selectedMove.y) = 2,
+                                                  and(
+                                                    local!selectedMove.x = local!xitemPlusOne,
+                                                    or(
+                                                      local!selectedMove.y + 1 = local!yitemPlusOne,
+                                                      local!selectedMove.y + 2 = local!yitemPlusOne
+                                                    )
+                                                  ),
+                                                  and(
+                                                    tointeger(local!selectedMove.x) = local!xitemPlusOne,
+                                                    or(
+                                                      tointeger(local!selectedMove.y) + 1 = local!yitemPlusOne
+                                                    )
+                                                  )
+                                                ),
+                                                a!dynamicLink(
+                                                  saveInto: {
+                                                    a!save(
+                                                      local!selectedMove,
+                                                      local!currentChessValue
+                                                    ),
+                                                    a!save(
+                                                      local!selectedMove,
+                                                      a!update(
+                                                        data: local!selectedMove,
+                                                        index: { "doc", "icon", "player" },
+                                                        value: {
+                                                          local!nextMoveBySamePlayer.doc,
+                                                          local!nextMoveBySamePlayer.icon,
+                                                          local!nextMoveBySamePlayer.player
+                                                        }
+                                                      )
+                                                    ),
+                                                    a!save(
+                                                      local!capturelastMove,
+                                                      local!selectedMove
+                                                    ),
+                                                    a!save(
+                                                      local!nextMoveBySamePlayer,
+                                                      a!update(
+                                                        data: local!nextMoveBySamePlayer,
+                                                        index: { "doc", "icon",  },
+                                                        value: { local!images[7], null }
+                                                      )
+                                                    ),
+                                                    a!save(
+                                                      local!chessRules,
+                                                      a!update(
+                                                        data: local!chessRules,
+                                                        index: {
+                                                          local!selectedMove.position,
+                                                          local!nextMoveBySamePlayer.position
+                                                        },
+                                                        value: {
+                                                          local!selectedMove,
+                                                          local!nextMoveBySamePlayer
+                                                        }
+                                                      )
+                                                    ),
+                                                    a!save(local!selectedMove, null),
+                                                    a!save(local!nextMoveBySamePlayer, null),
+                                                    a!save(
+                                                      local!currentPlayer,
+                                                      if(tointeger(local!currentPlayer) = 1, 2, 1)
+                                                    )
+                                                  }
+                                                ),
+                                                if(
+                                                  tointeger(local!currentChessValue.player) = local!currentPlayer,
+                                                  a!dynamicLink(
+                                                    saveInto: {
+                                                      a!save(
+                                                        local!selectedMove,
+                                                        local!currentChessValue
+                                                      ),
+                                                      a!save(
+                                                        local!nextMoveBySamePlayer,
+                                                        local!selectedMove
+                                                      ),
+                                                      a!save(
+                                                        local!currentPlayer,
+                                                        local!currentChessValue.player
+                                                      )
+                                                    }
+                                                  ),
+                                                  if(
+                                                    and(
+                                                      tointeger(local!currentChessValue.player) = 2,
+                                                      and(
+                                                        tointeger(local!selectedMove.y) + 1 = local!yitemPlusOne,
+                                                        or(
+                                                          tointeger(local!selectedMove.x) + 1 = local!xitemPlusOne,
+                                                          tointeger(local!selectedMove.x) + 1 = local!xitemPlusOne
+                                                        )
+                                                      )
+                                                    ),
+                                                    a!dynamicLink(
+                                                      saveInto: {
+                                                        a!save(
+                                                          local!selectedMove,
+                                                          local!currentChessValue
+                                                        ),
+                                                        a!save(
+                                                          local!selectedMove,
+                                                          a!update(
+                                                            data: local!selectedMove,
+                                                            index: { "doc", "icon", "player" },
+                                                            value: {
+                                                              local!nextMoveBySamePlayer.doc,
+                                                              local!nextMoveBySamePlayer.icon,
+                                                              local!nextMoveBySamePlayer.player
+                                                            }
+                                                          )
+                                                        ),
+                                                        a!save(
+                                                          local!nextMoveBySamePlayer,
+                                                          a!update(
+                                                            data: local!nextMoveBySamePlayer,
+                                                            index: { "doc", "icon", "isactive", "player" },
+                                                            value: {
+                                                              local!images[7],
+                                                              local!nextMoveBySamePlayer.icon,
+                                                              null,
+                                                              
+                                                              2
+                                                            }
+                                                          )
+                                                        ),
+                                                        a!save(
+                                                          local!chessRules,
+                                                          a!update(
+                                                            data: local!chessRules,
+                                                            index: {
+                                                              local!selectedMove.position,
+                                                              local!nextMoveBySamePlayer.position
+                                                            },
+                                                            value: {
+                                                              local!selectedMove,
+                                                              local!nextMoveBySamePlayer
+                                                            }
+                                                          )
+                                                        ),
+                                                        a!save(local!selectedMove, null),
+                                                        a!save(local!nextMoveBySamePlayer, null),
+                                                       
+
+                                                      }
+                                                    ),
+                                                    {}
+                                                  )
+                                                )
+                                              ),
+                                              equals: 2,
+                                              then: if(
+                                                if(
+                                                  tointeger(local!selectedMove.y) = 7,
+                                                  and(
+                                                    local!selectedMove.x = local!xitemPlusOne,
+                                                    or(
+                                                      local!selectedMove.y - 1 = local!yitemPlusOne,
+                                                      local!selectedMove.y - 2 = local!yitemPlusOne
+                                                    )
+                                                  ),
+                                                  and(
+                                                    tointeger(local!selectedMove.x) = tointeger(local!xitemPlusOne),
+                                                    or(
+                                                      local!selectedMove.y - 1 = local!yitemPlusOne
+                                                    )
+                                                  )
+                                                ),
+                                                a!dynamicLink(
+                                                  saveInto: {
+                                                    a!save(
+                                                      local!selectedMove,
+                                                      local!currentChessValue
+                                                    ),
+                                                    a!save(
+                                                      local!capturelastMove,
+                                                      local!selectedMove
+                                                    ),
+                                                    a!save(
+                                                      local!selectedMove,
+                                                      a!update(
+                                                        data: local!selectedMove,
+                                                        index: { "doc", "icon", "player" },
+                                                        value: {
+                                                          local!nextMoveBySamePlayer.doc,
+                                                          local!nextMoveBySamePlayer.icon,
+                                                          local!nextMoveBySamePlayer.player
+                                                        }
+                                                      )
+                                                    ),
+                                                    a!save(
+                                                      local!capturelastMove,
+                                                      local!selectedMove
+                                                    ),
+                                                    a!save(
+                                                      local!nextMoveBySamePlayer,
+                                                      a!update(
+                                                        data: local!nextMoveBySamePlayer,
+                                                        index: { "doc", "icon",  },
+                                                        value: { local!images[7], null }
+                                                      )
+                                                    ),
+                                                    a!save(
+                                                      local!chessRules,
+                                                      a!update(
+                                                        data: local!chessRules,
+                                                        index: {
+                                                          local!selectedMove.position,
+                                                          local!nextMoveBySamePlayer.position
+                                                        },
+                                                        value: {
+                                                          local!selectedMove,
+                                                          local!nextMoveBySamePlayer
+                                                        }
+                                                      )
+                                                    ),
+                                                    a!save(local!selectedMove, null),
+                                                    a!save(local!nextMoveBySamePlayer, null),
+                                                    a!save(
+                                                      local!currentPlayer,
+                                                      if(tointeger(local!currentPlayer) = 1, 2, 1)
+                                                    )
+                                                  }
+                                                ),
+                                                if(
+                                                  tointeger(local!currentChessValue.player) = local!currentPlayer,
+                                                  a!dynamicLink(
+                                                    saveInto: {
+                                                      a!save(
+                                                        local!selectedMove,
+                                                        local!currentChessValue
+                                                      ),
+                                                      a!save(
+                                                        local!nextMoveBySamePlayer,
+                                                        local!selectedMove
+                                                      ),
+                                                      a!save(
+                                                        local!currentPlayer,
+                                                        local!currentChessValue.player
+                                                      )
+                                                    }
+                                                  ),
+                                                  if(
+                                                    and(
+                                                      tointeger(local!currentChessValue.player) = 1,
+                                                      and(
+                                                        tointeger(local!selectedMove.y) - 1 = local!yitemPlusOne,
+                                                        or(
+                                                          tointeger(local!selectedMove.x) - 1 = local!xitemPlusOne,
+                                                          tointeger(local!selectedMove.x) + 1 = local!xitemPlusOne
+                                                        )
+                                                      )
+                                                    ),
+                                                    a!dynamicLink(
+                                                      saveInto: {
+                                                        a!save(
+                                                          local!selectedMove,
+                                                          local!currentChessValue
+                                                        ),
+                                                        a!save(
+                                                          local!selectedMove,
+                                                          a!update(
+                                                            data: local!selectedMove,
+                                                            index: { "doc", "icon", "player" },
+                                                            value: {
+                                                              local!nextMoveBySamePlayer.doc,
+                                                              local!nextMoveBySamePlayer.icon,
+                                                              local!nextMoveBySamePlayer.player
+                                                            }
+                                                          )
+                                                        ),
+                                                        a!save(
+                                                          local!capturelastMove,
+                                                          local!selectedMove
+                                                        ),
+                                                        a!save(
+                                                          local!nextMoveBySamePlayer,
+                                                          a!update(
+                                                            data: local!nextMoveBySamePlayer,
+                                                            index: { "doc", "icon", "isactive", "player" },
+                                                            value: {
+                                                              local!images[7],
+                                                              local!nextMoveBySamePlayer.icon,
+                                                              null,
+                                                              local!nextMoveBySamePlayer.player,
+
+                                                            }
+                                                          )
+                                                        ),
+                                                        a!save(
+                                                          local!chessRules,
+                                                          a!update(
+                                                            data: local!chessRules,
+                                                            index: {
+                                                              local!selectedMove.position,
+                                                              local!nextMoveBySamePlayer.position
+                                                            },
+                                                            value: {
+                                                              local!selectedMove,
+                                                              local!nextMoveBySamePlayer
+                                                            }
+                                                          )
+                                                        ),
+                                                        a!save(local!selectedMove, null),
+                                                        a!save(local!nextMoveBySamePlayer, null),
+                                                        a!save(
+                                                          local!currentPlayer,
+                                                          if(tointeger(local!currentPlayer) = 1, 2, 1)
+                                                        )
+                                                      }
+                                                    ),
+                                                    {}
+                                                  )
+                                                )
+                                              ),
+                                              default: {}
+                                            )
+                                          ),
+                                          height: "AUTO",
+                                          style: if(
+                                            and(
+                                              tointeger(local!selectedMove.x) = local!xitemPlusOne,
+                                              tointeger(local!selectedMove.y) = local!yitemPlusOne
+                                            ),
+                                            local!hexes[1],
+                                            a!match(
+                                              value: local!selectedMove.icon,
+                                              equals: local!totalPlayers[6],
+                                              then: a!match(
+                                                value: local!selectedMove.player,
+                                                equals: 1,
+                                                then: if(
+                                                  local!selectedMove.y = 2,
+                                                  if(
+                                                    and(
+                                                      local!selectedMove.x = local!xitemPlusOne,
+                                                      or(
+                                                        local!selectedMove.y + 1 = local!yitemPlusOne,
+                                                        local!selectedMove.y + 2 = local!yitemPlusOne
+                                                      )
+                                                    ),
+                                                    local!hexes[3],
+                                                    "STANDARD"
+                                                  ),
+                                                  if(
+                                                    and(
+                                                      local!selectedMove.x = local!xitemPlusOne,
+                                                      or(
+                                                        local!selectedMove.y + 1 = local!yitemPlusOne,
+                                                        local!selectedMove.y = local!yitemPlusOne
+                                                      )
+                                                    ),
+                                                    local!hexes[3],
+                                                    if(
+                                                      or(
+                                                        and(
+                                                          tointeger(local!selectedMove.x) + 1 = tointeger(local!currentChessValue.x),
+                                                          tointeger(local!selectedMove.y) + 1 = tointeger(local!currentChessValue.y),
+                                                          tointeger(local!currentChessValue.player) = if(local!currentPlayer = 1, 2, 1)
+                                                        ),
+                                                        and(
+                                                          tointeger(local!selectedMove.x) - 1 = tointeger(local!currentChessValue.x),
+                                                          tointeger(local!selectedMove.y) + 1 = tointeger(local!currentChessValue.y),
+                                                          tointeger(local!currentChessValue.player) = if(local!currentPlayer = 1, 2, 1)
+                                                        )
+                                                      ),
+                                                      local!hexes[4],
+                                                      "STANDARD"
+                                                    )
+                                                  )
+                                                ),
+                                                equals: 2,
+                                                then: if(
+                                                  local!selectedMove.y = 7,
+                                                  if(
+                                                    and(
+                                                      local!selectedMove.x = local!xitemPlusOne,
+                                                      or(
+                                                        local!selectedMove.y - 1 = local!yitemPlusOne,
+                                                        local!selectedMove.y - 2 = local!yitemPlusOne
+                                                      )
+                                                    ),
+                                                    local!hexes[2],
+                                                    "STANDARD"
+                                                  ),
+                                                  if(
+                                                    and(
+                                                      local!selectedMove.x = local!xitemPlusOne,
+                                                      or(
+                                                        local!selectedMove.y - 1 = local!yitemPlusOne
+                                                      )
+                                                    ),
+                                                    local!hexes[2],
+                                                    if(
+                                                      or(
+                                                        and(
+                                                          tointeger(local!selectedMove.x) - 1 = tointeger(local!currentChessValue.x),
+                                                          tointeger(local!selectedMove.y) - 1 = tointeger(local!currentChessValue.y),
+                                                          tointeger(local!currentChessValue.player) = if(local!currentPlayer = 1, 2, 1)
+                                                        ),
+                                                        and(
+                                                          tointeger(local!selectedMove.x) + 1 = tointeger(local!currentChessValue.x),
+                                                          tointeger(local!selectedMove.y) - 1 = tointeger(local!currentChessValue.y),
+                                                          tointeger(local!currentChessValue.player) = if(local!currentPlayer = 1, 2, 1)
+                                                        )
+                                                      ),
+                                                      local!hexes[4],
+                                                      "STANDARD"
+                                                    )
+                                                  )
+                                                ),
+                                                default: "STANDARD"
+                                              ),
+                                              equals: local!totalPlayers[1],
+                                              then: if(
+                                                or(
+                                                  local!xitemPlusOne = local!selectedMove.x,
+                                                  local!yitemPlusOne = local!selectedMove.y
+                                                ),
+                                                local!hexes[2],
+                                                "STANDARD"
+                                              ),
+                                              equals: local!totalPlayers[2],
+                                              then: if(
+                                                and(
+                                                  local!currentChessValue.doc = local!images[7],
+                                                  or(
+                                                    and(
+                                                      local!xitemPlusOne = tointeger(local!selectedMove.x) - 1,
+                                                      or(
+                                                        local!yitemPlusOne = tointeger(local!selectedMove.y) - 2,
+                                                        local!yitemPlusOne = tointeger(local!selectedMove.y) + 2,
+
+                                                      )
+                                                    ),
+                                                    and(
+                                                      local!xitemPlusOne = tointeger(local!selectedMove.x) + 1,
+                                                      or(
+                                                        local!yitemPlusOne = tointeger(local!selectedMove.y) - 2,
+                                                        local!yitemPlusOne = tointeger(local!selectedMove.y) + 2,
+
+                                                      )
+                                                    ),
+                                                    and(
+                                                      local!xitemPlusOne = tointeger(local!selectedMove.x) - 2,
+                                                      or(
+                                                        local!yitemPlusOne = tointeger(local!selectedMove.y) - 1,
+                                                        local!yitemPlusOne = tointeger(local!selectedMove.y) + 1,
+
+                                                      )
+                                                    ),
+                                                    and(
+                                                      local!xitemPlusOne = tointeger(local!selectedMove.x) + 2,
+                                                      or(
+                                                        local!yitemPlusOne = tointeger(local!selectedMove.y) - 1,
+                                                        local!yitemPlusOne = tointeger(local!selectedMove.y) + 1,
+
+                                                      )
+                                                    )
+                                                  )
+                                                ),
+                                                local!hexes[3],
+                                                "STANDARD"
+                                              ),
+                                              equals: local!totalPlayers[3],
+                                              then: if(
+                                                and(
+                                                  local!currentChessValue.doc = local!images[7],
+                                                  or(
+                                                    and(
+                                                      local!xitemPlusOne + local!yitemPlusOne = local!selectedMove.x + local!selectedMove.y
+                                                    ),
+                                                    and(
+                                                      local!xitemPlusOne - local!yitemPlusOne = local!selectedMove.x - local!selectedMove.y
+                                                    )
+                                                  )
+                                                ),
+                                                local!hexes[2],
+                                                "STANDARD"
+                                              ),
+                                              default: "STANDARD"
+                                            )
+                                          ),
+                                          showBorder: false(),
+                                          showShadow: false()
+                                        )
+                                      )
+                                    )
+                                  )
+                                },
+                                marginAbove: "NONE",
+                                marginBelow: "NONE",
+                                spacing: "NONE"
+                              )
+                            )
+                          )
+                        },
+                        height: "AUTO",
+                        style: "TRANSPARENT",
+                        marginBelow: "STANDARD"
+                      )
+                    }
+                  )
+                }
+              ),
+              a!columnsLayout(
+                columns: {
+                  a!columnLayout(contents: {}),
+                  a!columnLayout(contents: {}),
+                  a!columnLayout(contents: {})
+                }
+              )
+            },
+            width: "5X"
+          ),
+          a!columnLayout(
+            contents: {
+              a!richTextDisplayField(labelPosition: "COLLAPSED", value:  a!richTextItem(text: "Down Players")),
+              a!imageField(
+
+                labelPosition: "ABOVE",
+                images: {
+                  a!forEach(
+                    reject(
+                      fn!isnull,
+                      a!forEach(
+                        local!killedPlayers,
+                        if(fv!item.player = 1, fv!item.icon, null)
+                      )
+                    ),
+                    a!webImage(source: 
+
+                    index(local!images,wherecontains(fv!item,local!totalplayers),null)
+
+
+                    )
+                  )
+                },
+                size: "MEDIUM",
+                isThumbnail: false,
+                style: "STANDARD"
+              )
+            },
+            width: "1X"
+          )
+        }
+      )
+    }
+  }
+)
